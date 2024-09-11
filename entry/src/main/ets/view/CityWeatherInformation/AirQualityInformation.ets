@@ -37,37 +37,47 @@ export default struct AirQualityInformation {
         }
 
         Column({ space: 10 }) {
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6)
-            Text(this.airCondition.now.pm10).fontSize(15)
+          Row({ space: 22 }) {
+            Text('PM10').fontSize(15).opacity(0.6)
+            Text(this.airCondition.now.pm10).fontSize(15).fontColor(Color.White)
           }
 
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6)
-            Text(this.airCondition.now.pm2p5).fontSize(15)
+          Row({ space: 20 }) {
+            Text('PM2.5').fontSize(15).opacity(0.6)
+            Text(this.airCondition.now.pm2p5).fontSize(15).fontColor(Color.White)
           }
 
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6)
-            Text(this.airCondition.now.no2).fontSize(15)
+          Row({ space: 30 }) {
+            Row() {
+              Text('NO').fontSize(15).opacity(0.6)
+              Text('2').fontSize(10).opacity(0.6)
+            }
+            Text(this.airCondition.now.no2).fontSize(15).fontColor(Color.White)
           }
 
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6)
-            Text(this.airCondition.now.so2).fontSize(15)
+          Row({ space: 32 }) {
+            Row() {
+              Text('SO').fontSize(15).opacity(0.6)
+              Text('2').fontSize(10).opacity(0.6)
+            }
+            Text(this.airCondition.now.so2).fontSize(15).fontColor(Color.White)
           }
 
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6)
-            Text(this.airCondition.now.co).fontSize(15)
+          Row({ space: 35 }) {
+            Text('CO').fontSize(15).opacity(0.6)
+            Text(this.airCondition.now.co).fontSize(15).fontColor(Color.White)
           }
 
-          Row({ space: 15 }) {
-            Text('PM10').fontSize(12).opacity(0.6).fontSize(15)
-            Text(this.airCondition.now.o3)
+          Row({ space: 35 }) {
+            Row() {
+              Text('O').fontSize(15).opacity(0.6)
+              Text('3').fontSize(10).opacity(0.6)
+            }
+            Text(this.airCondition.now.o3).fontSize(15).fontColor(Color.White)
           }
         }
         .padding({ top: 20, left: 10, right: 10 })
+         .alignItems(HorizontalAlign.Start)
 
       }
       .backgroundColor("#2a000000")
