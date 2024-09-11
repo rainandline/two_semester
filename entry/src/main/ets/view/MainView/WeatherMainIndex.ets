@@ -79,6 +79,7 @@ export struct WeatherMainIndex {
         console.log('空气质量的天气信息成功' + JSON.stringify(this.airCondition))
       }
     })
+
     this.isLoading = true
     this.updateBackground()
   }

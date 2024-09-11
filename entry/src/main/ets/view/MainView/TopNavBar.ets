@@ -3,7 +3,6 @@
 import { router } from '@kit.ArkUI'
 import City from '../../viewMainmodel/City'
 import WeatherInformation from '../../viewMainmodel/WeatherInformation'
-import { url } from '@kit.ArkTS'
 import { CommonConstants } from '../../commom/constants/CommonConstants'
 
 @Component

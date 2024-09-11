@@ -13,15 +13,16 @@ export default struct LifeIndexInformation {
     Column() {
       Row() {
         Text('生活建议')
-          .fontSize(14)
+          .fontSize(19).fontColor(Color.White)
         Text('>')
-          .fontSize(16)
+          .fontSize(25).fontColor(Color.White)
       }
       .width('100%')
-      .padding(8)
       .justifyContent(FlexAlign.SpaceBetween)
+      .padding({ left: 15, right: 15 })
 
       Divider()
+
       Grid() {
         ForEach(this.lifeIndexCondition.daily, (data: getLifeIndex) => {
           GridItem() {
@@ -33,13 +34,14 @@ export default struct LifeIndexInformation {
       .rowsTemplate('1fr 1fr 1fr')
 
     }
-    .padding({bottom:20})
-    .margin({top:30})
-    .width('90%')
+    .padding({ bottom: 20, top: 10 })
+    .margin({ top: 30 })
+    .width('100%')
     .borderRadius(10)
-    .height(450)
-    .backgroundColor("#FFDED8D8")
-    .onClick( () => {
+    .height(550)
+    .backgroundColor("#2a000000")
+    .backgroundBlurStyle(BlurStyle.Thin)
+    .onClick(() => {
       this.isShow2 = !this.isShow2
     })
     .bindSheet(this.isShow2, this.tipsBuilderLifeAdvice(this.lifeIndexCondition), {
@@ -107,18 +109,17 @@ export default struct LifeIndexInformation {
 
   //主页面的生活建议Card
   @Builder Card(image:Resource,title:string, text:string){
-    Column({space:10}){
+    Column({space:20}){
       Text(title)
-        .fontSize(14)
-        .fontColor(Color.Black)
+        .fontSize(18)
+        .fontColor(Color.White)
         .fontWeight(CommonConstants.FONT_WEIGHT_600)
       Image(image)
-        .width(30)
-        .height(30)
-        .fillColor(Color.Black)
+        .width(40)
+        .height(40)
       Text(text)
-        .fontSize(16)
-        .fontWeight(CommonConstants.FONT_WEIGHT_500)
+        .fontSize(20)
+        .fontWeight(CommonConstants.FONT_WEIGHT_500).fontColor(Color.White)
     }
     .padding(10)
   }

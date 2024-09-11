@@ -4,7 +4,6 @@ import { getWeatherInformation } from '../../viewmodel/getWeatherInformation';
 
 //格式化时间
 function formatDate(dateString: string): string {
-
   //正则表达提取年月日，从服务端拿到的数据为  2021-11-15
   const regex = /(\d{4})-(\d{2})-(\d{2})/
 
@@ -17,7 +16,6 @@ function formatDate(dateString: string): string {
     const day = parseInt(match[3])
     return `${month}月${day}日`
   }
-
   //不符合预期直接原路打回
   return dateString
 }
@@ -48,7 +46,16 @@ function getDayDescription(dateString: string): string {
 
 @Component
 export default struct Weather7dInformation {
-  @Prop daysWeather: WeatherInformation
+
+  @Prop @Watch('onDaysWeatherChange') daysWeather: WeatherInformation
+
+  onDaysWeatherChange(newVal: WeatherInformation) {
+    if (newVal) {
+      this.drawLineChart1(); // 调用第一个方法
+      this.drawLineChart2(); // 调用第二个方法
+    }
+  }
+
   //对于最高气温和最低气温的描绘，创建两个对象
   private settings_1: RenderingContextSettings = new RenderingContextSettings(true);
   private context_1: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings_1);
@@ -56,22 +63,15 @@ export default struct Weather7dInformation {
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
 
   build() {
-
     Scroll() {
       Column({space:10}) {
         Row({ space: 25 }) {
           ForEach(this.daysWeather.daily, (data: getWeatherInformation) => {
             Column({ space: 6 }) {
-              Text(getDayDescription(data.fxDate!))
-                .fontSize(14)
-                .fontWeight(500)
-              Text(`${data.fxDate ? formatDate(data.fxDate) : ''}`).fontSize(14)
-                .fontWeight(500)
-              Image($r(`app.media.${data.iconDay}`))
-                .width(30)
-                .height(30)
-              Text(`${data.textDay}`).fontSize(14)
-                .fontWeight(500)
+              Text(getDayDescription(data.fxDate!)).fontSize(14).fontWeight(500).fontColor(Color.White)
+              Text(`${data.fxDate ? formatDate(data.fxDate) : ''}`).fontSize(14).fontColor(Color.White).fontWeight(500)
+              Image($r(`app.media.${data.iconDay}`)).width(30).height(30).fillColor(Color.White)
+              Text(`${data.textDay}`).fontSize(14).fontWeight(500).fontColor(Color.White)
             }
           })
         }
@@ -83,16 +83,19 @@ export default struct Weather7dInformation {
             .width(480)
             .height(120)
             .onReady(() => {
-              this.drawLineChart1()
+              if (this.daysWeather.daily && this.daysWeather.daily.length > 0) {
+                this.drawLineChart1();
+              }
             })
-
         }
         Column(){
           Canvas(this.context)
             .width(480)
             .height(120)
             .onReady(() => {
-              this.drawLineChart2()
+              if (this.daysWeather.daily && this.daysWeather.daily.length > 0) {
+                this.drawLineChart2();
+              }
             })
         }
       }
@@ -103,12 +106,12 @@ export default struct Weather7dInformation {
     .backgroundColor("#2a000000")
     .borderRadius(10)
     .margin({ top: 20 })
-    .height(400)
+    .height(370)
     .padding({ top: 10, bottom: 10, left: 15, right: 15 })
     .backgroundBlurStyle(BlurStyle.Thin)
   }
 
-  private drawLineChart1() {
+  drawLineChart1() {
 
     //如果判断为空可以直接跳出绘图函数
     if (!this.daysWeather.daily || this.daysWeather.daily.length === 0) {
@@ -119,18 +122,18 @@ export default struct Weather7dInformation {
     //canvas的宽高
     const width = this.context_1.width
     const height = this.context_1.height
-    const padding: GeneratedObjectLiteralInterface_1 = { top: 20, bottom: 20, left: 15, right: 15 }
-    const dataPoints = this.daysWeather.daily!.map(item => Number(item.tempMax))
-    const maxTemp = Math.max(...dataPoints)
-    const minTemp = Math.min(...dataPoints)
+    const padding: GeneratedObjectLiteralInterface_1 = { top: 30, bottom: 15, left: 15, right: 15 }
+    const dataPoints = this.daysWeather.daily!.map(item => Number(item.tempMax))  //对于绘制信息的获取
+    const maxTemp = Math.max(...dataPoints)  //最高气温
+    const minTemp = Math.min(...dataPoints)  //最低气温
 
     // 清除画布
     this.context_1.clearRect(0, 0, width, height)
 
     // 绘制折线
     this.context_1.beginPath()
-    this.context_1.strokeStyle = '#FF7300'
-    this.context_1.lineWidth = 2
+    this.context_1.strokeStyle = Color.White   //绘制折现的颜色
+    this.context_1.lineWidth = 3
     console.log('testTag width和height', this.context_1.width, this.context_1.height)
     dataPoints.forEach((temp, index) => {
       const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
@@ -138,19 +141,20 @@ export default struct Weather7dInformation {
         height - padding.bottom - ((temp - minTemp) / (maxTemp - minTemp) * (height - padding.top - padding.bottom))
       console.log('tesTag x,y的值：', x, y)
       if (index === 0) {
-        //初始点
+        //初始点,用于在画布上开始一条新的路径或移动路径到一个新的起点。它不会在画布上绘制任何东西，而是将“笔”移动到指定的坐标上。
         this.context_1.moveTo(x, y)
       } else {
-        //连接
+        //连接,意味着从第二个点开始，每次调用都会在画布上画一条线，连接前一个点和当前点。
         this.context_1.lineTo(x, y)
       }
     })
-    //进行边框绘制
+
+    //进行边框绘制,可能已经使用moveTo和lineTo定义了一个或多个路径，stroke方法会将这些路径以线条的形式绘制在画布上。
     this.context_1.stroke()
 
     // 绘制数据点和温度标注
-    this.context_1.textAlign = 'center'
-    this.context_1.font = '46px sans-serif'
+    this.context_1.textAlign = 'center'   //以指定的坐标为中心点进行渲染。
+    this.context_1.font = '55px sans-serif'   //大小为46像素，字体为无衬线字体（sans-serif），用于后续的文本绘制。
     dataPoints.forEach((temp, index) => {
       const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
       const y =
@@ -160,7 +164,7 @@ export default struct Weather7dInformation {
       this.context_1.beginPath()
       //绘制弧线路径
       this.context_1.arc(x, y, 4, 0, 2 * Math.PI)
-      this.context_1.fillStyle = '#FF7300'
+      this.context_1.fillStyle = Color.White
       this.context_1.fill()
 
       // 绘制温度标注
@@ -169,7 +173,7 @@ export default struct Weather7dInformation {
     })
   }
 
-  private drawLineChart2() {
+  drawLineChart2() {
     if (!this.daysWeather.daily || this.daysWeather.daily.length === 0) {
       console.log('No data available for drawing chart')
       return
@@ -177,7 +181,7 @@ export default struct Weather7dInformation {
     //canvas的宽高
     const width = this.context.width
     const height = this.context.height
-    const padding: GeneratedObjectLiteralInterface_1 = { top: 20, bottom: 20, left: 15, right: 15 }
+    const padding: GeneratedObjectLiteralInterface_1 = { top: 30, bottom: 25, left: 15, right: 15 }
     const dataPoints = this.daysWeather.daily!.map(item => Number(item.tempMin))
     const maxTemp = Math.max(...dataPoints)
     const minTemp = Math.min(...dataPoints)
@@ -189,8 +193,8 @@ export default struct Weather7dInformation {
 
     // 绘制折线
     this.context.beginPath()
-    this.context.strokeStyle = '#FF7300'
-    this.context.lineWidth = 2
+    this.context.strokeStyle = Color.White
+    this.context.lineWidth = 3
     console.log('testTag width和height', this.context.width, this.context.height)
     dataPoints.forEach((temp, index) => {
       const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
@@ -210,7 +214,7 @@ export default struct Weather7dInformation {
 
     // 绘制数据点和温度标注
     this.context.textAlign = 'center'
-    this.context.font = '46px sans-serif'
+    this.context.font = '55px sans-serif'
     dataPoints.forEach((temp, index) => {
       const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
       const y =
@@ -220,7 +224,7 @@ export default struct Weather7dInformation {
       this.context.beginPath()
       //绘制弧线路径
       this.context.arc(x, y, 4, 0, 2 * Math.PI)
-      this.context.fillStyle = '#FF7300'
+      this.context.fillStyle = Color.White
       this.context.fill()
 
       // 绘制温度标注
@@ -230,74 +234,6 @@ export default struct Weather7dInformation {
 
   }
 }
-
-
-  //
-  // private drawLineChart2() {
-  //   if (!this.daysWeather.daily || this.daysWeather.daily.length === 0) {
-  //     console.log('No data available for drawing chart')
-  //     return
-  //   }
-  //   //canvas的宽高
-  //   const width = this.context.width
-  //   const height = this.context.height
-  //   const padding: GeneratedObjectLiteralInterface_1 = { left: 20, right: 20, top: 30, bottom: 30 }
-  //   const dataPoints = this.daysWeather.daily!.map(item => Number(item.tempMin))
-  //   const maxTemp = Math.max(...dataPoints)
-  //   const minTemp = Math.min(...dataPoints)
-  //
-  //   // 清除画布
-  //   this.context.clearRect(0, 0, width, height)
-  //
-  //   // 绘制折线
-  //   this.context.beginPath()
-  //   this.context.strokeStyle = '#FF7300'
-  //   this.context.lineWidth = 2
-  //   console.log('testTag width和height', this.context.width,this.context.height)
-  //   dataPoints.forEach((temp, index) => {
-  //     const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
-  //     const y = height - padding.bottom - ((temp - minTemp) / (maxTemp - minTemp) * (height - padding.top - padding.bottom))
-  //     console.log('tesTag x,y的值：', x,y)
-  //     if (index === 0) {
-  //       //初始点
-  //       this.context.moveTo(x, y)
-  //     } else {
-  //       //连接
-  //       this.context.lineTo(x, y)
-  //     }
-  //   })
-  //   //进行边框绘制
-  //   this.context.stroke()
-  //
-  //   // 绘制数据点和温度标注
-  //   this.context.textAlign = 'center'
-  //   this.context.font = '46px sans-serif'
-  //   dataPoints.forEach((temp, index) => {
-  //     const x = padding.left + (index * (width - padding.left - padding.right) / (dataPoints.length - 1))
-  //     const y = height - padding.bottom - ((temp - minTemp) / (maxTemp - minTemp) * (height - padding.top - padding.bottom))
-  //
-  //     // 绘制数据点
-  //     this.context.beginPath()
-  //     //绘制弧线路径
-  //     this.context.arc(x, y, 4, 0, 2 * Math.PI)
-  //     this.context.fillStyle = '#FF7300'
-  //     this.context.fill()
-  //
-  //     // 绘制温度标注
-  //     this.context.fillStyle = '#333333'
-  //     this.context.fillText(`${temp}°`, x, y - 15)
-  //   })
-
-    // 绘制时间轴
-    /*this.context.textAlign = 'center'
-    this.context.fillStyle = '#666666'
-    this.HourWeather.hourly?.forEach((item, index) => {
-      const x = padding.left + (index * (width - padding.left - padding.right) / (this.HourWeather.hourly!.length - 1))
-      this.context.fillText(`${item.fxTime ? extractTime(item.fxTime) : ''}`, x, height - 5)
-    })*/
-//   }
-// }
-
 
 interface GeneratedObjectLiteralInterface_1 {
   left: number;

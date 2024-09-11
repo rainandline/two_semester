@@ -16,8 +16,8 @@ class HttpModel {
   private WeatherBaseURL: string = 'https://devapi.qweather.com/v7/'
   private CityBaseURL: string = 'https://geoapi.qweather.com/v2/city/lookup?'
   private key: string = '5936dc34239542f099986a0bf48280c4'
-  // private key:string='f6b4c31d80db485aabdbea8277545500'
-  // private key:string='26e5f5ab269b45b18579228a1c5cd1a3'
+   //private key:string='f6b4c31d80db485aabdbea8277545500'
+
 
   //获取城市的信息,返回一个 City<WeatherItem> 类型的数组
   async GetCityInformation(CityName: string): Promise<City<WeatherInformation>[]> {

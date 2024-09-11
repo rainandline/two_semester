@@ -1,75 +1,87 @@
 import ConditionInformation from '../../viewMainmodel/ConditionInformation'
 
 @Component
-export default struct AirQualityInformation{
-
+export default struct AirQualityInformation {
   @Prop airCondition: ConditionInformation
 
   build() {
 
-    if(this.airCondition.now?.aqi) {
-      Row({space:10}) {
-        Column({space:10}) {
-          Text('污染指数').fontSize(15).fontWeight(500)
+    if (this.airCondition.now?.aqi) {
+      Row({ space: 7 }) {
+        Column({ space: 17 }) {
+          Text('污染指数').fontSize(20).fontWeight(500).fontColor(Color.White)
 
           Stack() {
+            Gauge({ value: Number(this.airCondition.now?.aqi), min: 0, max: 500 })
+              .startAngle(210)
+              .endAngle(150)
+              .colors([
+                [ '#00FF00', 0 ],
+                [ '#FFFF00', 0.2 ],
+                [ '#FFA500', 0.4 ],
+                [ '#FF0000', 0.6 ],
+                [ '#800080', 0.8 ],
+                [ '#8B4513',  1 ]
+              ])
+              .strokeWidth(20)
+              .width(200)
+              .height(200)
 
-            Progress({value:Number(this.airCondition.now?.aqi),total:100,type:ProgressType.Ring}).color(getAQIColor(Number(this.airCondition.now?.aqi))).width(150).height(150)
-              .style({ strokeWidth: 15})
-
-            Column() {
-              Text(this.airCondition.now.category).fontSize(15)
-              Text(this.airCondition.now.aqi).fontSize(50)
+            Column({ space: 10 }) {
+              Text(this.airCondition.now.category).fontSize(20).fontColor(Color.White).opacity(0.8)
+              Text(this.airCondition.now.aqi).fontSize(50).fontColor(Color.White).opacity(0.8)
             }
-          }
-          Text('0~500').fontSize(15).fontWeight(500).opacity(0.8)
 
-        }.layoutWeight(1)
+          }.layoutWeight(1)
 
-        Column({space:10}) {
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
-          }
+        }
 
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
+        Column({ space: 10 }) {
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6)
+            Text(this.airCondition.now.pm10).fontSize(15)
           }
 
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6)
+            Text(this.airCondition.now.pm2p5).fontSize(15)
           }
 
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6)
+            Text(this.airCondition.now.no2).fontSize(15)
           }
 
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6)
+            Text(this.airCondition.now.so2).fontSize(15)
           }
 
-          Row({space:15}) {
-            Text('PM10').fontSize(10).opacity(0.6)
-            Text(this.airCondition.now.pm10)
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6)
+            Text(this.airCondition.now.co).fontSize(15)
+          }
+
+          Row({ space: 15 }) {
+            Text('PM10').fontSize(12).opacity(0.6).fontSize(15)
+            Text(this.airCondition.now.o3)
           }
         }
-        .padding({top:20,left:10,right:10})
+        .padding({ top: 20, left: 10, right: 10 })
+
       }
-      .backgroundColor("#FFDED8D8")
+      .backgroundColor("#2a000000")
+      .backgroundBlurStyle(BlurStyle.Thin)
       .borderRadius(10)
-      .margin({top:20})
-      .padding({left:20,right:20,top:10,bottom:10})
+      .margin({ top: 20 })
+      .padding({ left: 20, right: 20, top: 10, bottom: 10 })
       .height(300)
       .width('100%')
+
     }
-
-
   }
 }
+
 
 function getAQIColor(aqi: number): string {
   if (aqi >= 0 && aqi <= 50) {
